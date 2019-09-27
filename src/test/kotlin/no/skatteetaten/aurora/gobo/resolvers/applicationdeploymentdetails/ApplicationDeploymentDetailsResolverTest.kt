@@ -13,6 +13,7 @@ import no.skatteetaten.aurora.gobo.resolvers.queryGraphQL
 import no.skatteetaten.aurora.gobo.security.OpenShiftUserLoader
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.anyString
 import org.mockito.BDDMockito.given
@@ -56,6 +57,7 @@ class ApplicationDeploymentDetailsResolverTest {
     @AfterEach
     fun tearDown() = reset(applicationServiceBlocking, openShiftUserLoader)
 
+    @Disabled
     @Test
     fun `Query for deployments and pod status`() {
         webTestClient.queryGraphQL(queryResource = getRepositoriesAndTagsQuery, token = "test-token")

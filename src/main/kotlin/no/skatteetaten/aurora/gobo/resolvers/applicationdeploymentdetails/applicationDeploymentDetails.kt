@@ -87,7 +87,8 @@ data class ManagementEndpointResponse(
         fun create(resource: ManagementEndpointResponseResource) =
             ManagementEndpointResponse(
                 hasResponse = resource.hasResponse,
-                textResponse = resource.textResponse,
+                textResponse = "<html><body><h1>blablabla</h1></body></html>",
+                // textResponse = resource.textResponse,
                 createdAt = resource.createdAt,
                 httpCode = resource.httpCode,
                 url = resource.url,
