@@ -109,7 +109,7 @@ class ApplicationConfig(
     @TargetService(ServiceTypes.DBH)
     fun webClientDbh(@Value("\${integrations.dbh.url}") dbhUrl: String, builder: WebClient.Builder) =
         builder.init().baseUrl(dbhUrl)
-            .defaultHeader(HttpHeaders.AUTHORIZATION, "$HEADER_AURORA_TOKEN ${sharedSecretReader.secret}").build()
+            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer ${sharedSecretReader.secret}").build()
 
     fun WebClient.Builder.init() =
         this.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
