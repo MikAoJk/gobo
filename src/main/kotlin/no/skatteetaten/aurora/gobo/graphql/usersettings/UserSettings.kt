@@ -3,6 +3,14 @@ package no.skatteetaten.aurora.gobo.graphql.usersettings
 import no.skatteetaten.aurora.gobo.integration.boober.ApplicationDeploymentFilterResource
 import no.skatteetaten.aurora.gobo.integration.boober.UserSettingsResource
 
+interface UserSettingsError {
+    val message: String
+}
+
+data class NoToken(override val message: String) : UserSettingsError
+
+data class InvalidToken(override val message: String) : UserSettingsError
+
 data class UserSettingsInput(val applicationDeploymentFilters: List<ApplicationDeploymentFilter> = emptyList()) {
     fun applicationDeploymentFilters(affiliations: List<String>? = null) =
         if (affiliations == null) {
@@ -12,7 +20,10 @@ data class UserSettingsInput(val applicationDeploymentFilters: List<ApplicationD
         }
 }
 
-data class UserSettings(val applicationDeploymentFilters: List<ApplicationDeploymentFilter> = emptyList()) {
+data class UserSettings(
+    val applicationDeploymentFilters: List<ApplicationDeploymentFilter> = emptyList(),
+    val errors: List<UserSettingsError>? = null
+) {
     constructor(userSettingsResource: UserSettingsResource) : this(
         userSettingsResource.applicationDeploymentFilters.map { ApplicationDeploymentFilter(it) }
     )

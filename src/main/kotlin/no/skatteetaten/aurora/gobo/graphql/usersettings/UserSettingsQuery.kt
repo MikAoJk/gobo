@@ -10,8 +10,12 @@ import org.springframework.stereotype.Component
 @Component
 class UserSettingsQuery(private val userSettingsService: UserSettingsService) : Query {
     @GraphQLDescription("Get user settings")
-    suspend fun userSettings(dfe: DataFetchingEnvironment): UserSettings {
-        val settings = userSettingsService.getUserSettings(dfe.token())
-        return UserSettings(settings)
-    }
+    suspend fun userSettings(dfe: DataFetchingEnvironment): UserSettings =
+        kotlin.runCatching {
+            val token = dfe.token()
+            val settings = userSettingsService.getUserSettings(token)
+            UserSettings(settings)
+        }.recoverCatching {
+            UserSettings(errors = listOf(NoToken("No token input")))
+        }.getOrThrow()
 }
