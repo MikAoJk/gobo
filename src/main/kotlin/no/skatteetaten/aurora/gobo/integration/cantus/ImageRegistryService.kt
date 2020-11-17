@@ -89,18 +89,26 @@ class ImageRegistryService(
         return TagsDto.toDto(resource)
     }
 
-    private suspend inline fun <reified T : HalResource> WebClient.RequestHeadersSpec<*>.execute(token: String) =
+    private suspend inline fun <reified T : Any> WebClient.RequestHeadersSpec<*>.execute(token: String) : AuroraResponse<T> =
         this.headers {
             it.set(HttpHeaders.AUTHORIZATION, "Bearer $token")
-        }.retrieve().bodyToMono<AuroraResponse<T>>().map { response ->
-            response.copy(
-                items = response.items.map { item ->
-                    runCatching {
-                        objectMapper.convertValue(item, T::class.java)
-                    }.onFailure {
-                        logger.error(it) { "Unable to parse response items from cantus: $item" }
-                    }.getOrThrow()
-                }
-            )
+        }.retrieve().bodyToMono<AuroraResponse<Any>>().map { response ->
+            response.run {
+                AuroraResponse(
+                    items = items.map { item ->
+                        runCatching {
+                            objectMapper.convertValue(item, T::class.java)
+                        }.onFailure {
+                            logger.error(it) { "Unable to parse response items from cantus: $item" }
+                        }.getOrThrow()
+                    },
+                    failure = failure,
+                    success = success,
+                    message = message,
+                    failureCount = failureCount,
+                    successCount = successCount,
+                    count = count
+                )
+            }
         }.awaitFirst()
 }
